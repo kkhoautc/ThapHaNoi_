@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using ThapHaNoi.Manager;
 using ThapHaNoi.Model;
 using static ThapHaNoi.FormGame;
 
@@ -24,10 +25,13 @@ namespace ThapHaNoi
         {
             this.StartPosition = FormStartPosition.CenterScreen;
             InitializeComponent();
+            SoundManager.InitSounds();
+            SoundManager.PlaySound();
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
+            SoundManager.StopSound();
             FormGame formgame = new FormGame(FormGame.GameMode.Manual);
             this.Hide();
             formgame.Show();
@@ -40,6 +44,8 @@ namespace ThapHaNoi
 
         private void btnAISolver_Click(object sender, EventArgs e)
         {
+
+            SoundManager.StopSound();
             FormGame formgame = new FormGame(FormGame.GameMode.AISolve);
             this.Hide();
             formgame.Show();
@@ -61,7 +67,6 @@ namespace ThapHaNoi
         {
             var data = DatabaseManager.GetTopScores();
 
-            // Tận dụng CustomMsgBox để hiển thị
             CustomMsgBox.ShowLeaderboard(data, "Leaderboard");
         }
 
@@ -80,9 +85,8 @@ namespace ThapHaNoi
             Config.TowerCount = (int)numTowersMenu.Value;
             Config.DiskCount = (int)numDisksMenu.Value;
 
-            // Ẩn panel đi
+            
             panelConfig.Visible = false;
-            //    MessageBox.Show("Đã lưu cấu hình!");
            // ShowToastNotification("Đã lưu cấu hình!");
             CustomMsgBox.Show($"Đã lưu cấu hình!", "Độ khó", "AI");
         }
@@ -98,18 +102,14 @@ namespace ThapHaNoi
 
         private async void ShowToastNotification(string message)
         {
-            // 1. Tăng bộ đếm mỗi lần gọi hàm mới
             int currentToast = ++toastCounter;
 
-            // 2. Cập nhật chữ và hiện Label lên
             lblToast.Text = message;
             lblToast.Visible = true;
             lblToast.BringToFront();
 
-            // 3. Chờ đúng 5 giây (5000 mili-giây) mà KHÔNG làm đơ game
             await Task.Delay(5000);
 
-            // 4. Sau 5 giây, chỉ tắt Label nếu không có thông báo mới nào chèn vào
             if (toastCounter == currentToast)
             {
                 lblToast.Visible = false;

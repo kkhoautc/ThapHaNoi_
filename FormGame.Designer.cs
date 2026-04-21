@@ -43,6 +43,7 @@
             lbStopContinue = new Label();
             lbScoreUI = new Button();
             lbScore = new Label();
+            lbminMove = new Label();
             panelSettings.SuspendLayout();
             SuspendLayout();
             // 
@@ -251,6 +252,17 @@
             lbScore.TabIndex = 9;
             lbScore.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // lbminMove
+            // 
+            lbminMove.BackColor = Color.FromArgb(209, 239, 249);
+            lbminMove.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lbminMove.ForeColor = Color.Red;
+            lbminMove.Location = new Point(988, 622);
+            lbminMove.Name = "lbminMove";
+            lbminMove.Size = new Size(355, 47);
+            lbminMove.TabIndex = 10;
+            lbminMove.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // FormGame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -258,6 +270,7 @@
             BackgroundImage = Properties.Resources.form1background;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1384, 761);
+            Controls.Add(lbminMove);
             Controls.Add(lbScore);
             Controls.Add(lbScoreUI);
             Controls.Add(lbStopContinue);
@@ -295,5 +308,6 @@
         private Label lbScore;
         private Button button2;
         private Button btnSound;
+        private Label lbminMove;
     }
 }

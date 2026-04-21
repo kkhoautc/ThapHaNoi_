@@ -2,9 +2,11 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using ThapHaNoi.GameLogic;
+using ThapHaNoi.Manager;
 using ThapHaNoi.Model;
 using ThapHaNoi.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -19,6 +21,8 @@ namespace ThapHaNoi
         private int currentStepIndex = 0;
         private System.Windows.Forms.Timer aiTimer;
         private GameMode _mode;
+
+        private const int MAX_GAME_TIME = 300;
 
         public int moveCount = 0;
         private int timeSeconds = 0;
@@ -44,16 +48,20 @@ namespace ThapHaNoi
         {
             InitializeComponent();
             DatabaseManager.InitializeDatabase();
+            SoundManager.InitSounds();
+
             this.DoubleBuffered = true;
             this.KeyPreview = true; // QUAN TRỌNG: Để Form nhận được sự kiện phím
             this._mode = mode;
             this.Text = "Tháp Hà Nội";
 
-            aiTimer = new System.Windows.Forms.Timer();
-            aiTimer.Interval = 700; // Tốc độ AI di chuyển
-            aiTimer.Tick += AiTimer_Tick;
+            
+
+
+
+
             this.StartPosition = FormStartPosition.CenterScreen;
-            SetupGameUI(); // Khởi tạo Menu, Timer, Label thông số
+            SetupGameUI(); 
             SetupSettingsPanel();
             StartGame();
         }
@@ -76,13 +84,13 @@ namespace ThapHaNoi
         private void SetupGameUI()
         {
             // 1. Thiết lập Timer
+            aiTimer = new System.Windows.Forms.Timer();
+            aiTimer.Interval = 700; // Tốc độ AI di chuyển
+            aiTimer.Tick += AiTimer_Tick;
+
             gameTimer = new System.Windows.Forms.Timer();
-            gameTimer.Interval = 1000; // 1 giây
-            gameTimer.Tick += (s, e) =>
-            {
-                timeSeconds++;
-                UpdateStatusLabel();
-            };
+            gameTimer.Interval = 1000;
+            gameTimer.Tick += gameTimer_Tick;
             gameTimer.Start();
 
             // 2. Thiết lập Menu Cài đặt
@@ -171,6 +179,8 @@ namespace ThapHaNoi
 
             lbScore.Text = $"{score}";
 
+            lbminMove.Text = $"Số bước tối thiểu : {minMoves}";
+
             lbCheDo.Text = $"Chế độ: {(_mode == GameMode.Manual ? "Người chơi" : "AI Solver")}";
             lbCount.Text = $"{moveCount}";
             lbTime.Text = $"{timeSeconds}s";
@@ -227,9 +237,10 @@ namespace ThapHaNoi
                 {
                     moveCount++;
                     UpdateStatusLabel();
+                    SoundManager.PlayMove();
 
                     // Kiểm tra thắng cuộc (Đĩa dồn hết về cột cuối)
-                    if (game.Towers.Skip(1).Any(t => t.Disks.Count == game.NumDisks))
+                    if (game.Towers[Config.TowerCount-1].Disks.Count == game.NumDisks)
                     {
                         this.Invalidate();
                         gameTimer.Stop();
@@ -240,12 +251,17 @@ namespace ThapHaNoi
                         {
                             DatabaseManager.SaveScore(modeStr, moveCount, timeSeconds, score);
                         }
+                        SoundManager.PlayWin();
                         CustomMsgBox.Show($"Chúc mừng!\nBạn đã thắng trong {moveCount} bước\nĐiểm của bạn : {score}\nThời gian : {timeSeconds} giây\nĐã lưu vào thành tích của bạn !", "Congratulations", "Player");
 
                         RestartGame();
                     }
                 }
-                selectedTower = -1; // Reset trạng thái chọn
+                else
+                {
+                    SoundManager.PlayError();
+                }
+                    selectedTower = -1;
             }
             this.Invalidate();
         }
@@ -435,10 +451,10 @@ namespace ThapHaNoi
                         game.Towers[i].Disks.Push(new Disk(diskSize));
                 }
 
-                // --- SỬA TẠI ĐÂY ---
-                moveCount = currentStepIndex; // Cập nhật biến đếm bước bằng chỉ số bước hiện tại của AI
-                UpdateStatusLabel();          // Ép Label hiển thị lại con số mới
-                                              // -------------------
+             
+                moveCount = currentStepIndex;
+                UpdateStatusLabel();          
+                                            
 
                 currentStepIndex++;
                 Invalidate();
@@ -449,6 +465,25 @@ namespace ThapHaNoi
                 aiTimer.Stop();
                 CustomMsgBox.Show($"AI đã giải trong {moveCount} bước\nThời gian : {timeSeconds} giây", "AI Solver", "AI");
             }
+        }
+        private void gameTimer_Tick(object sender, EventArgs e)
+        {
+            timeSeconds++;
+
+            if (timeSeconds >= MAX_GAME_TIME)
+            {
+                gameTimer.Stop();
+
+                SoundManager.PlayError();
+
+                CustomMsgBox.Show("RẤT TIẾC!\nThời gian đã hết. Bạn cần nhanh tay hơn ở lần sau!",
+                                  "GAME OVER");
+
+                this.Close();
+                return;
+            }
+
+            UpdateStatusLabel();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -464,6 +499,8 @@ namespace ThapHaNoi
             {
                 moveCount--;
                 UpdateStatusLabel();
+
+                SoundManager.PlayMove();
                 Invalidate();
             }
         }
@@ -474,20 +511,21 @@ namespace ThapHaNoi
             {
                 moveCount++;
                 UpdateStatusLabel();
+                SoundManager.PlayMove();
                 Invalidate();
             }
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            // 1. Hiện Menu ẩn lên
+       
             panelSettings.Visible = true;
 
 
-            panelSettings.BringToFront(); // Đảm bảo không bị tháp đè lên
+            panelSettings.BringToFront(); 
 
-            // 2. Tạm dừng game
-            StopGame(); // Nếu AI đang chạy thì cũng dừng luôn
+            //  Tạm dừng game
+            StopGame(); 
         }
         public void StopGame()
         {
@@ -518,6 +556,7 @@ namespace ThapHaNoi
 
         private void btnHomeGame_Click(object sender, EventArgs e)
         {
+            SoundManager.PlaySound();
             this.Close();
         }
 
@@ -549,17 +588,21 @@ namespace ThapHaNoi
 
         private void btnSound_Click(object sender, EventArgs e)
         {
+            SoundManager.IsSoundEnabled = !SoundManager.IsSoundEnabled;
 
             if (stateSound == "sound")
             {
                 stateSound = "mute";
                 btnSound.BackgroundImage = Properties.Resources.btnMute;
+                
             }
             else
             {
                 stateSound = "sound";
                 btnSound.BackgroundImage = Properties.Resources.btnSound;
+                SoundManager.setEnable(true);
             }
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
