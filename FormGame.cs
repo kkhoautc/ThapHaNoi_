@@ -607,7 +607,7 @@ namespace ThapHaNoi
 
         private void button2_Click(object sender, EventArgs e)
         {
-            CustomMsgBox.ShowImage("Cảm ơn sự đóng góp của các bạn!!!","Donate");
+            CustomMsgBox.Show("Cảm ơn bạn đã chơi Tháp Hà Nội! Nếu có ý tưởng nâng cấp hay gặp lỗi, hãy liên hệ với nhóm mình qua Zalo : 0869098486", "LỜI CẢM ƠN","Player");
         }
     }
 }

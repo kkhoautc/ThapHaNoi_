@@ -162,57 +162,7 @@ namespace ThapHaNoi.Manager
                 msgForm.ShowDialog();
             }
         }
-        public static void ShowImage(string message, string title = "")
-        {
-            using (Form msgForm = new Form())
-            {
-
-                Color themeColor = Color.Gold;
-              
-
-                msgForm.Size = new Size(450, 700);
-                msgForm.BackColor = themeColor;
-                msgForm.FormBorderStyle = FormBorderStyle.None;
-                msgForm.StartPosition = FormStartPosition.CenterParent;
-
-                Panel mainPanel = new Panel { Size = new Size(446, 776), Location = new Point(2, 2), BackColor = Color.FromArgb(30, 30, 35) };
-                msgForm.Controls.Add(mainPanel);
-
-                // 1. Tiêu đề
-                Label lblTitle = new Label { Text = title.ToUpper(), ForeColor = themeColor, Font = new Font("Segoe UI Black", 14, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Top, Height = 45 };
-                mainPanel.Controls.Add(lblTitle);
-
-                // 2. Khu vực chứa Ảnh (PictureBox)
-                PictureBox pictureBox = new PictureBox();
-                pictureBox.Image = Properties.Resources.qr;
-                pictureBox.SizeMode = PictureBoxSizeMode.Zoom; // Tự động co giãn ảnh cho vừa khung hình mà không bị méo
-                pictureBox.Size = new Size(400, 400); // Kích thước khung ảnh
-                pictureBox.Location = new Point((mainPanel.Width - 400) / 2, 55); // Căn giữa
-                pictureBox.BackColor = Color.FromArgb(20, 20, 25);
-                mainPanel.Controls.Add(pictureBox);
-
-                Label lblMessage = new Label { Text = message, ForeColor = Color.White, Font = new Font("Segoe UI", 15), TextAlign = ContentAlignment.MiddleCenter, Location = new Point(10, 500), Size = new Size(426, 80) };
-                mainPanel.Controls.Add(lblMessage);
-
-                // 4. Nút bấm ĐỒNG Ý
-                Button btnOk = new Button
-                {
-                    Text = "ĐỒNG Ý",
-                    Size = new Size(200, 45),
-                    Location = new Point((mainPanel.Width - 200) / 2, 600),
-                    BackColor = themeColor,
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    Cursor = Cursors.Hand
-                };
-                btnOk.FlatAppearance.BorderSize = 0;
-                btnOk.DialogResult = DialogResult.OK;
-                mainPanel.Controls.Add(btnOk);
-
-                msgForm.ShowDialog();
-            }
-        }
+        
     }
    
 }
