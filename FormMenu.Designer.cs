@@ -41,6 +41,8 @@
             numTowersMenu = new NumericUpDown();
             btnDokho = new Button();
             lblToast = new Label();
+            panelHuongDan = new Panel();
+            btnCloseHuongDan = new Button();
             panelConfig.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numDisksMenu).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numTowersMenu).BeginInit();
@@ -88,7 +90,7 @@
             // 
             // btnSetting
             // 
-            btnSetting.BackgroundImage = Properties.Resources.CaiDat;
+            btnSetting.BackgroundImage = Properties.Resources.btnThanhtich;
             btnSetting.BackgroundImageLayout = ImageLayout.Stretch;
             btnSetting.FlatAppearance.BorderSize = 0;
             btnSetting.FlatStyle = FlatStyle.Flat;
@@ -202,6 +204,31 @@
             lblToast.TextAlign = ContentAlignment.MiddleCenter;
             lblToast.Visible = false;
             // 
+            // panelHuongDan
+            // 
+            panelHuongDan.BackgroundImage = Properties.Resources.ScreenHuongDan;
+            panelHuongDan.BackgroundImageLayout = ImageLayout.Stretch;
+            panelHuongDan.Location = new Point(190, 75);
+            panelHuongDan.Name = "panelHuongDan";
+            panelHuongDan.Size = new Size(1000, 600);
+            panelHuongDan.TabIndex = 6;
+            panelHuongDan.Visible = false;
+            // 
+            // btnCloseHuongDan
+            // 
+            btnCloseHuongDan.BackColor = Color.FromArgb(255, 232, 165);
+            btnCloseHuongDan.BackgroundImage = Properties.Resources.btnBack;
+            btnCloseHuongDan.BackgroundImageLayout = ImageLayout.Stretch;
+            btnCloseHuongDan.FlatAppearance.BorderSize = 0;
+            btnCloseHuongDan.FlatStyle = FlatStyle.Flat;
+            btnCloseHuongDan.Location = new Point(628, 689);
+            btnCloseHuongDan.Name = "btnCloseHuongDan";
+            btnCloseHuongDan.Size = new Size(127, 60);
+            btnCloseHuongDan.TabIndex = 7;
+            btnCloseHuongDan.UseVisualStyleBackColor = false;
+            btnCloseHuongDan.Visible = false;
+            btnCloseHuongDan.Click += btnCloseHuongDan_Click;
+            // 
             // FormMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -209,6 +236,8 @@
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1384, 761);
+            Controls.Add(btnCloseHuongDan);
+            Controls.Add(panelHuongDan);
             Controls.Add(lblToast);
             Controls.Add(btnDokho);
             Controls.Add(panelConfig);
@@ -240,5 +269,7 @@
         private Label label2;
         private Button btnDokho;
         private Label lblToast;
+        private Panel panelHuongDan;
+        private Button btnCloseHuongDan;
     }
 }

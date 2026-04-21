@@ -10,7 +10,7 @@ using ThapHaNoi.Models;
 using static System.Net.Mime.MediaTypeNames;
 namespace ThapHaNoi
 {
-    public partial class Form1 : Form
+    public partial class FormGame : Form
     {
         private HanoiGame game;
         private int selectedTower = -1;
@@ -23,19 +23,16 @@ namespace ThapHaNoi
         public int moveCount = 0;
         private int timeSeconds = 0;
 
+        string stateSound = "sound";
+
         private int minMoves = 0;
 
         private int score = 100;
 
         private System.Windows.Forms.Timer gameTimer;
-        private Label lblInfo; // Hiển thị thời gian và số bước
-        private ContextMenuStrip menuSettings; // Menu khi ấn Cài đặt
 
         // private Panel panelSettings; // Vùng menu ẩn
-        private Button btnResume;
-        private Button btnRestartInMenu;
-        private Button btnHomeInMenu;
-        private Panel panelNoti;
+
 
         public enum GameMode
         {
@@ -43,13 +40,14 @@ namespace ThapHaNoi
             AISolve // AI tự động chạy
         }
 
-        public Form1(GameMode mode)
+        public FormGame(GameMode mode)
         {
             InitializeComponent();
+            DatabaseManager.InitializeDatabase();
             this.DoubleBuffered = true;
             this.KeyPreview = true; // QUAN TRỌNG: Để Form nhận được sự kiện phím
             this._mode = mode;
-            this.Text = "Tháp Hà Nội - AI BFS Solver (Nhấn S để giải)";
+            this.Text = "Tháp Hà Nội";
 
             aiTimer = new System.Windows.Forms.Timer();
             aiTimer.Interval = 700; // Tốc độ AI di chuyển
@@ -107,13 +105,13 @@ namespace ThapHaNoi
             panelSettings.Visible = false; // Mặc định bị ẩn
             this.Controls.Add(panelSettings);
             panelSettings.BringToFront();
-            
+
 
 
         }
 
         // Hàm hỗ trợ tạo nút bấm nhanh cho Menu
-        
+
         private int GetOptimalMoves(int towers, int disks)
         {
             // Ràng buộc an toàn: Nếu số đĩa quá nhỏ
@@ -170,7 +168,7 @@ namespace ThapHaNoi
 
             // Đảm bảo điểm không bao giờ bị âm
             if (score < 0) score = 0;
-            
+
             lbScore.Text = $"{score}";
 
             lbCheDo.Text = $"Chế độ: {(_mode == GameMode.Manual ? "Người chơi" : "AI Solver")}";
@@ -194,9 +192,9 @@ namespace ThapHaNoi
             int towers = Config.TowerCount;
             int disks = Config.DiskCount;
 
-            minMoves = GetOptimalMoves(disks, towers);
+            minMoves = GetOptimalMoves(towers, disks);
 
-            game = new HanoiGame(towers, disks); // 3 cột, 4 đĩa
+            game = new HanoiGame(towers, disks);
             selectedTower = -1;
             UpdateStatusLabel();
             this.Invalidate();
@@ -235,8 +233,14 @@ namespace ThapHaNoi
                     {
                         this.Invalidate();
                         gameTimer.Stop();
+                        string modeStr = $"{Config.TowerCount} Cột - {Config.DiskCount} Đĩa";
 
-                        CustomMsgBox.Show($"Chúc mừng!\nBạn đã thắng trong {moveCount} bước\nĐiểm của bạn : {score}\nThời gian : {timeSeconds} giây\nĐã lưu vào thành tích của bạn !", "Congratulations","Player");
+                        // LƯU VÀO DATABASE NẾU LÀ NGƯỜI CHƠI (Không lưu điểm của AI)
+                        if (_mode == GameMode.Manual)
+                        {
+                            DatabaseManager.SaveScore(modeStr, moveCount, timeSeconds, score);
+                        }
+                        CustomMsgBox.Show($"Chúc mừng!\nBạn đã thắng trong {moveCount} bước\nĐiểm của bạn : {score}\nThời gian : {timeSeconds} giây\nĐã lưu vào thành tích của bạn !", "Congratulations", "Player");
 
                         RestartGame();
                     }
@@ -260,7 +264,7 @@ namespace ThapHaNoi
                         aiTimer.Stop();
                         gameTimer.Stop();
                         lbStopContinue.Text = $"Nhấn phím Space để tiếp tục !";
-                       
+
                     }
                     else
                     {
@@ -270,8 +274,8 @@ namespace ThapHaNoi
                             aiTimer.Start();
                             gameTimer.Start();
                             lbStopContinue.Text = $"Nhấn phím Space để tạm dừng !";
-                            UpdateStatusLabel(); 
-                           
+                            UpdateStatusLabel();
+
                         }
                     }
                 }
@@ -305,7 +309,7 @@ namespace ThapHaNoi
 
                 if (clickedTower >= towerCount) clickedTower = towerCount - 1;
 
-                
+
                 HandleTowerSelection(clickedTower);
             }
         }
@@ -443,7 +447,7 @@ namespace ThapHaNoi
             {
                 gameTimer.Stop();
                 aiTimer.Stop();
-                CustomMsgBox.Show($"AI đã giải trong {moveCount} bước\nThời gian : {timeSeconds} giây", "AI Solver","AI");
+                CustomMsgBox.Show($"AI đã giải trong {moveCount} bước\nThời gian : {timeSeconds} giây", "AI Solver", "AI");
             }
         }
 
@@ -525,16 +529,42 @@ namespace ThapHaNoi
 
         private void button3_Click(object sender, EventArgs e)
         {
-            CustomMsgBox.Show($"Chúc mừng!\nBạn đã thắng trong {moveCount} bước\nĐiểm của bạn : {score}\nThời gian : {timeSeconds} giây\nĐã lưu vào thành tích của bạn !", "Congratulations", "Player");
+
             panelSettings.Visible = false;
             if (_mode == GameMode.Manual)
             {
-                gameTimer.Start(); 
+                gameTimer.Start();
             }
             else
             {
-                aiTimer.Start();   
+                aiTimer.Start();
             }
+        }
+
+
+        private void btnSound_MouseClick(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void btnSound_Click(object sender, EventArgs e)
+        {
+
+            if (stateSound == "sound")
+            {
+                stateSound = "mute";
+                btnSound.BackgroundImage = Properties.Resources.btnMute;
+            }
+            else
+            {
+                stateSound = "sound";
+                btnSound.BackgroundImage = Properties.Resources.btnSound;
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            CustomMsgBox.ShowImage("Cảm ơn sự đóng góp của các bạn!!!","Donate");
         }
     }
 }

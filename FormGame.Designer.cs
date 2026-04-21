@@ -1,6 +1,6 @@
 ﻿namespace ThapHaNoi
 {
-    partial class Form1
+    partial class FormGame
     {
         /// <summary>
         ///  Required designer variable.
@@ -32,6 +32,8 @@
             btnRedo = new Button();
             btnSettings = new Button();
             panelSettings = new Panel();
+            button2 = new Button();
+            btnSound = new Button();
             button3 = new Button();
             btnReplayGame = new Button();
             btnHomeGame = new Button();
@@ -90,6 +92,8 @@
             panelSettings.BackColor = Color.FromArgb(178, 235, 253);
             panelSettings.BackgroundImage = Properties.Resources.settingbackground;
             panelSettings.BackgroundImageLayout = ImageLayout.Stretch;
+            panelSettings.Controls.Add(button2);
+            panelSettings.Controls.Add(btnSound);
             panelSettings.Controls.Add(button3);
             panelSettings.Controls.Add(btnReplayGame);
             panelSettings.Controls.Add(btnHomeGame);
@@ -98,6 +102,39 @@
             panelSettings.Size = new Size(387, 491);
             panelSettings.TabIndex = 4;
             panelSettings.Visible = false;
+            // 
+            // button2
+            // 
+            button2.BackColor = Color.FromArgb(255, 232, 165);
+            button2.BackgroundImage = Properties.Resources.btnDonate;
+            button2.BackgroundImageLayout = ImageLayout.Stretch;
+            button2.FlatAppearance.BorderSize = 0;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.ImageAlign = ContentAlignment.BottomLeft;
+            button2.Location = new Point(220, 209);
+            button2.Margin = new Padding(0);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 75);
+            button2.TabIndex = 4;
+            button2.UseVisualStyleBackColor = false;
+            button2.Click += button2_Click;
+            // 
+            // btnSound
+            // 
+            btnSound.BackColor = Color.FromArgb(255, 232, 165);
+            btnSound.BackgroundImage = Properties.Resources.btnSound;
+            btnSound.BackgroundImageLayout = ImageLayout.Stretch;
+            btnSound.FlatAppearance.BorderSize = 0;
+            btnSound.FlatStyle = FlatStyle.Flat;
+            btnSound.ImageAlign = ContentAlignment.BottomLeft;
+            btnSound.Location = new Point(103, 209);
+            btnSound.Margin = new Padding(0);
+            btnSound.Name = "btnSound";
+            btnSound.Size = new Size(75, 75);
+            btnSound.TabIndex = 3;
+            btnSound.UseVisualStyleBackColor = false;
+            btnSound.Click += btnSound_Click;
+            btnSound.MouseClick += btnSound_MouseClick;
             // 
             // button3
             // 
@@ -214,7 +251,7 @@
             lbScore.TabIndex = 9;
             lbScore.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // Form1
+            // FormGame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -232,7 +269,7 @@
             Controls.Add(btnRedo);
             Controls.Add(btnUndo);
             DoubleBuffered = true;
-            Name = "Form1";
+            Name = "FormGame";
             Text = "Form1";
             FormClosed += Form1_FormClosed;
             Load += Form1_Load;
@@ -256,5 +293,7 @@
         private Label lbStopContinue;
         private Button lbScoreUI;
         private Label lbScore;
+        private Button button2;
+        private Button btnSound;
     }
 }

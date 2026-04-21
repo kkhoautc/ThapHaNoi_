@@ -8,15 +8,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using ThapHaNoi.Model;
+using static ThapHaNoi.FormGame;
 
 namespace ThapHaNoi
 {
     public partial class FormMenu : Form
     {
-        
-        private int toastCounter = 0;
 
+        private int toastCounter = 0;
+        private Panel panelLeaderboard;
+        private DataGridView dgvLeaderboard;
         public FormMenu()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -25,11 +28,11 @@ namespace ThapHaNoi
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            Form1 form1 = new Form1(Form1.GameMode.Manual);
+            FormGame formgame = new FormGame(FormGame.GameMode.Manual);
             this.Hide();
-            form1.Show();
+            formgame.Show();
 
-            form1.FormClosed += (s, args) =>
+            formgame.FormClosed += (s, args) =>
             {
                 this.Show();
             };
@@ -37,11 +40,11 @@ namespace ThapHaNoi
 
         private void btnAISolver_Click(object sender, EventArgs e)
         {
-            Form1 form1 = new Form1(Form1.GameMode.AISolve);
+            FormGame formgame = new FormGame(FormGame.GameMode.AISolve);
             this.Hide();
-            form1.Show();
+            formgame.Show();
 
-            form1.FormClosed += (s, args) =>
+            formgame.FormClosed += (s, args) =>
             {
                 this.Show();
             };
@@ -49,12 +52,17 @@ namespace ThapHaNoi
 
         private void btnHuongDan_Click(object sender, EventArgs e)
         {
+            panelHuongDan.Visible = true;
+            btnCloseHuongDan.Visible = true;
 
         }
 
         private void btnSetting_Click(object sender, EventArgs e)
         {
+            var data = DatabaseManager.GetTopScores();
 
+            // Tận dụng CustomMsgBox để hiển thị
+            CustomMsgBox.ShowLeaderboard(data, "Leaderboard");
         }
 
         private void FormMenu_FormClosed(object sender, FormClosedEventArgs e)
@@ -74,11 +82,12 @@ namespace ThapHaNoi
 
             // Ẩn panel đi
             panelConfig.Visible = false;
-        //    MessageBox.Show("Đã lưu cấu hình!");
-            ShowToastNotification("Đã lưu cấu hình!");
+            //    MessageBox.Show("Đã lưu cấu hình!");
+           // ShowToastNotification("Đã lưu cấu hình!");
+            CustomMsgBox.Show($"Đã lưu cấu hình!", "Độ khó", "AI");
         }
 
-       
+
         private void btnDokho_Click(object sender, EventArgs e)
         {
             panelConfig.Visible = true;
@@ -106,5 +115,12 @@ namespace ThapHaNoi
                 lblToast.Visible = false;
             }
         }
+
+        private void btnCloseHuongDan_Click(object sender, EventArgs e)
+        {
+            btnCloseHuongDan.Visible = false;
+            panelHuongDan.Visible = false ;
+        }
+        
     }
 }
